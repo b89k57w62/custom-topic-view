@@ -1,20 +1,36 @@
 {{#if siteSettings.topic_view_count_control_enabled}}
   {{#if context.currentUser.admin}}
     <div class="topic-view-count-control" data-topic-id="{{context.topic.id}}">
-      <button class="btn view-count-edit-btn {{#if context.topic.use_custom_view_count}}custom-active{{/if}}" 
-              title="{{#if context.topic.use_custom_view_count}}{{i18n 'view_count_control.disable_custom'}}{{else}}{{i18n 'view_count_control.enable_custom'}}{{/if}}" 
-              onclick="editViewCount({{context.topic.id}})">
-        <span class="btn-text">{{i18n 'view_count_control.edit_view_count'}}</span>
-      </button>
+      {{#if context.topic.use_custom_view_count}}
+        <button class="btn view-count-edit-btn custom-active" 
+                title="{{i18n 'view_count_control.disable_custom'}}" 
+                onclick="editViewCount({{context.topic.id}})">
+          <span class="btn-text">{{i18n 'view_count_control.edit_view_count'}}</span>
+        </button>
+      {{else}}
+        <button class="btn view-count-edit-btn" 
+                title="{{i18n 'view_count_control.enable_custom'}}" 
+                onclick="editViewCount({{context.topic.id}})">
+          <span class="btn-text">{{i18n 'view_count_control.edit_view_count'}}</span>
+        </button>
+      {{/if}}
     </div>
   {{else if context.currentUser.staff}}
     {{#if siteSettings.view_count_staff_only}}
       <div class="topic-view-count-control" data-topic-id="{{context.topic.id}}">
-        <button class="btn view-count-edit-btn {{#if context.topic.use_custom_view_count}}custom-active{{/if}}" 
-                title="{{#if context.topic.use_custom_view_count}}{{i18n 'view_count_control.disable_custom'}}{{else}}{{i18n 'view_count_control.enable_custom'}}{{/if}}" 
-                onclick="editViewCount({{context.topic.id}})">
-          <span class="btn-text">{{i18n 'view_count_control.edit_view_count'}}</span>
-        </button>
+        {{#if context.topic.use_custom_view_count}}
+          <button class="btn view-count-edit-btn custom-active" 
+                  title="{{i18n 'view_count_control.disable_custom'}}" 
+                  onclick="editViewCount({{context.topic.id}})">
+            <span class="btn-text">{{i18n 'view_count_control.edit_view_count'}}</span>
+          </button>
+        {{else}}
+          <button class="btn view-count-edit-btn" 
+                  title="{{i18n 'view_count_control.enable_custom'}}" 
+                  onclick="editViewCount({{context.topic.id}})">
+            <span class="btn-text">{{i18n 'view_count_control.edit_view_count'}}</span>
+          </button>
+        {{/if}}
       </div>
     {{/if}}
   {{/if}}
