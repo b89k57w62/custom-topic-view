@@ -1,0 +1,17 @@
+plugins:
+  topic_view_count_control_enabled:
+    client: true
+    default: true
+    description: "Enable the topic view count control feature site-wide"
+  view_count_category_override:
+    client: true
+    default: true
+    description: "Allow category settings to override global view count display settings"
+  view_count_hide_original:
+    client: true
+    default: true
+    description: "Hide the original view count display when custom view count is enabled"
+  view_count_staff_only:
+    client: true
+    default: false
+    description: "Only allow staff members to modify view counts (otherwise admin only)" 

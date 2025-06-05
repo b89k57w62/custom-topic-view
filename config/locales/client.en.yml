@@ -1,0 +1,25 @@
+en:
+  js:
+    view_count_control:
+      title: "View Count Control"
+      edit_view_count: "Edit View Count"
+      custom_view_count: "Custom View Count"
+      use_custom_count: "Use Custom Count"
+      save: "Save"
+      cancel: "Cancel"
+      current_views: "Current Views"
+      set_custom_views: "Set Custom Views"
+      enable_custom: "Enable Custom View Count"
+      disable_custom: "Use Original View Count"
+      placeholder: "Enter custom view count..."
+      success: "View count updated successfully"
+      error: "Failed to update view count"
+      invalid_number: "Please enter a valid number"
+    category:
+      view_count_control_enabled: "Enable view count control for topics in this category"
+      view_count_control_default: "Default state of custom view count in this category (checked = enabled)"
+    site_settings:
+      topic_view_count_control_enabled: "Enable the topic view count control feature site-wide"
+      view_count_category_override: "Allow category settings to override global view count settings"
+      view_count_hide_original: "Hide the original view count display when custom view count is enabled"
+      view_count_staff_only: "Only allow staff members to modify view counts (otherwise admin only)" 

@@ -1,0 +1,34 @@
+{{#if this.siteSettings.topic_view_count_control_enabled}}
+  {{#if this.canEditViewCount}}
+    <div class="view-count-control">
+      {{#if this.isEditing}}
+        <div class="view-count-inline-edit">
+          <input 
+            type="number" 
+            value={{this.editValue}} 
+            placeholder={{i18n "view_count_control.placeholder"}}
+            {{on "input" this.updateEditValue}}
+            min="0"
+          />
+          <button class="save-btn" {{on "click" this.saveViewCount}}>
+            {{i18n "view_count_control.save"}}
+          </button>
+          <button class="cancel-btn" {{on "click" this.cancelEdit}}>
+            {{i18n "view_count_control.cancel"}}
+          </button>
+        </div>
+      {{else}}
+        <button class="btn-icon view-count-edit-btn" title={{i18n "view_count_control.edit_view_count"}} {{on "click" this.openViewCountModal}}>
+          {{d-icon "edit"}}
+          <span class="btn-text">{{i18n "view_count_control.edit_view_count"}}</span>
+        </button>
+        
+        {{#if this.topic.use_custom_view_count}}
+          <span class="custom-view-count">{{this.topic.display_view_count}}</span>
+        {{else}}
+          <span class="original-view-count">{{this.topic.views}}</span>
+        {{/if}}
+      {{/if}}
+    </div>
+  {{/if}}
+{{/if}} 

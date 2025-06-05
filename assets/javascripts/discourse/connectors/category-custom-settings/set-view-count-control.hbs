@@ -1,0 +1,17 @@
+{{#if this.siteSettings.topic_view_count_control_enabled}}
+  <h3>{{i18n "view_count_control.title"}}</h3>
+  
+  <div class="control-group">
+    <label>
+      {{input type="checkbox" checked=this.category.custom_fields.view_count_control_enabled}}
+      {{i18n "category.view_count_control_enabled"}}
+    </label>
+  </div>
+  
+  <div class="control-group">
+    <label>
+      {{input type="checkbox" checked=this.category.custom_fields.view_count_control_default}}
+      {{i18n "category.view_count_control_default"}}
+    </label>
+  </div>
+{{/if}} 

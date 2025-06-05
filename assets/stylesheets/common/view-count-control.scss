@@ -1,0 +1,213 @@
+// Hide original view count when custom view count is enabled
+.topic-list-item.use-custom-view-count {
+  .views {
+    .number {
+      display: none !important;
+    }
+  }
+}
+
+// View count control button styles
+.view-count-edit-btn {
+  padding: 0.3em 0.6em;
+  margin-left: 0.5em;
+  background: #007bff;
+  color: white;
+  border: 1px solid #007bff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8em;
+  transition: all 0.2s ease;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+  white-space: nowrap;
+  
+  &:hover {
+    background: #0056b3;
+    border-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 123, 255, 0.3);
+  }
+  
+  .d-icon {
+    font-size: 1em;
+    margin: 0;
+    flex-shrink: 0;
+  }
+  
+  .btn-text {
+    font-size: 0.9em;
+    font-weight: 500;
+  }
+}
+
+// View count control modal/popup styles
+.view-count-control-modal {
+  .modal-body {
+    padding: 20px;
+    
+    .control-group {
+      margin-bottom: 15px;
+      
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: var(--primary);
+      }
+      
+      input[type="number"] {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--primary-low);
+        border-radius: 4px;
+        font-size: 14px;
+        
+        &:focus {
+          outline: none;
+          border-color: #007bff;
+          box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+      }
+      
+      input[type="checkbox"] {
+        margin-right: 8px;
+      }
+      
+      .current-count {
+        color: var(--primary-medium);
+        font-size: 0.9em;
+        margin-top: 5px;
+      }
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid var(--primary-low);
+      
+      .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        &.btn-primary {
+          background: #007bff;
+          color: white;
+          border: 1px solid #007bff;
+          
+          &:hover {
+            background: #0056b3;
+            border-color: #0056b3;
+          }
+        }
+        
+        &.btn-default {
+          background: var(--secondary);
+          color: var(--primary);
+          border: 1px solid var(--primary-low);
+          
+          &:hover {
+            background: var(--primary-low);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Topic view page control
+.topic-above-post-stream .view-count-control {
+  margin: 10px 0;
+  
+  .view-count-edit-btn {
+    background: #28a745;
+    border-color: #28a745;
+    padding: 0.5em 1em;
+    font-size: 0.9em;
+    min-height: 36px;
+    
+    &:hover {
+      background: #218838;
+      border-color: #218838;
+    }
+  }
+}
+
+// Hide original view counts globally when setting is enabled
+body[data-hide-original-views="true"] {
+  .topic-list .views .number {
+    display: none !important;
+  }
+  
+  .topic-meta-data .views .number {
+    display: none !important;
+  }
+}
+
+// Custom view count display
+.custom-view-count {
+  color: #007bff;
+  font-weight: 500;
+  
+  &::before {
+    content: "👁 ";
+    margin-right: 2px;
+  }
+}
+
+// Inline edit form
+.view-count-inline-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 10px;
+  
+  input {
+    width: 80px;
+    padding: 4px 8px;
+    border: 1px solid var(--primary-low);
+    border-radius: 3px;
+    font-size: 12px;
+  }
+  
+  .save-btn, .cancel-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: none;
+    
+    &.save-btn {
+      background: #28a745;
+      color: white;
+      
+      &:hover {
+        background: #218838;
+      }
+    }
+    
+    &.cancel-btn {
+      background: #6c757d;
+      color: white;
+      
+      &:hover {
+        background: #5a6268;
+      }
+    }
+  }
+} 

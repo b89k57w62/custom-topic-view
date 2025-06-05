@@ -1,0 +1,25 @@
+zh_CN:
+  js:
+    view_count_control:
+      title: "觀看次數控制"
+      edit_view_count: "編輯觀看次數"
+      custom_view_count: "自定義觀看次數"
+      use_custom_count: "使用自定義次數"
+      save: "保存"
+      cancel: "取消"
+      current_views: "當前觀看次數"
+      set_custom_views: "設置自定義觀看次數"
+      enable_custom: "啟用自定義觀看次數"
+      disable_custom: "使用原始觀看次數"
+      placeholder: "輸入自定義觀看次數..."
+      success: "觀看次數更新成功"
+      error: "更新觀看次數失敗"
+      invalid_number: "請輸入有效的數字"
+    category:
+      view_count_control_enabled: "為此分類中的主題啟用觀看次數控制功能"
+      view_count_control_default: "此分類中自定義觀看次數的默認狀態（勾選 = 啟用）"
+    site_settings:
+      topic_view_count_control_enabled: "在全站啟用觀看次數控制功能"
+      view_count_category_override: "允許分類設置覆蓋全局觀看次數設置"
+      view_count_hide_original: "當啟用自定義觀看次數時隱藏原始觀看次數顯示"
+      view_count_staff_only: "僅允許工作人員修改觀看次數（否則僅限管理員）" 
