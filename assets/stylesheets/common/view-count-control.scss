@@ -1,4 +1,3 @@
-// Hide original view count when custom view count is enabled
 .topic-list-item.use-custom-view-count {
   .views {
     .number {
@@ -7,7 +6,6 @@
   }
 }
 
-// View count control button styles
 .view-count-edit-btn {
   padding: 4px 8px;
   margin-left: 8px;
@@ -55,7 +53,6 @@
   }
 }
 
-// View count control modal/popup styles
 .view-count-control-modal {
   .modal-body {
     padding: 20px;
@@ -136,13 +133,11 @@
   }
 }
 
-// Topic list integration
 .topic-view-count-control {
   display: inline-block;
   vertical-align: middle;
 }
 
-// Topic view page control
 .topic-above-post-stream .view-count-control {
   margin: 10px 0;
   
@@ -154,7 +149,6 @@
   }
 }
 
-// Hide original view counts globally when setting is enabled
 body[data-hide-original-views="true"] {
   .topic-list .views .number {
     display: none !important;
@@ -165,14 +159,12 @@ body[data-hide-original-views="true"] {
   }
 }
 
-// More aggressive hiding for custom view counts
 .topic-list-item[data-use-custom-view="true"] {
   .views .number {
     display: none !important;
   }
 }
 
-// Hide original views when custom view is active
 .use-custom-view-count {
   .views .number {
     display: none !important;
@@ -185,7 +177,6 @@ body[data-hide-original-views="true"] {
   }
 }
 
-// Ensure custom view count is visible
 .custom-view-display {
   color: var(--primary);
   font-weight: 500;
@@ -198,13 +189,11 @@ body[data-hide-original-views="true"] {
   }
 }
 
-// Custom view count display
 .custom-view-count {
   color: #007bff;
   font-weight: 500;
 }
 
-// Inline edit form
 .view-count-inline-edit {
   display: inline-flex;
   align-items: center;
