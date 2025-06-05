@@ -2,15 +2,15 @@ en:
   js:
     view_count_control:
       title: "View Count Control"
-      edit_view_count: "Edit View Count"
+      edit_view_count: "Edit Views"
       custom_view_count: "Custom View Count"
       use_custom_count: "Use Custom Count"
       save: "Save"
       cancel: "Cancel"
       current_views: "Current Views"
       set_custom_views: "Set Custom Views"
-      enable_custom: "Enable Custom View Count"
-      disable_custom: "Use Original View Count"
+      enable_custom: "Set Custom Views"
+      disable_custom: "Reset to Original"
       placeholder: "Enter custom view count..."
       success: "View count updated successfully"
       error: "Failed to update view count"

@@ -1,5 +1,6 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { ajax } from "discourse/lib/ajax";
+import { formatViewCount } from "../lib/view-count-formatter";
 
 export default {
   name: "view-count-control-initializer",
@@ -76,13 +77,13 @@ export default {
           
           // Replace original view count with custom count in the same position
           if (originalViews) {
-            originalViews.textContent = customCount;
+            originalViews.textContent = formatViewCount(customCount);
             originalViews.setAttribute('data-custom-view', 'true');
           } else if (viewsContainer) {
             // Create custom view count element if original doesn't exist
             const customViewElement = document.createElement('span');
             customViewElement.className = 'number';
-            customViewElement.textContent = customCount;
+            customViewElement.textContent = formatViewCount(customCount);
             customViewElement.setAttribute('data-custom-view', 'true');
             viewsContainer.appendChild(customViewElement);
           }
@@ -98,7 +99,7 @@ export default {
             // Need to fetch original count
             ajax(`/t/${topicId}.json`).then(response => {
               if (response && response.views !== undefined) {
-                originalViews.textContent = response.views;
+                originalViews.textContent = formatViewCount(response.views);
                 originalViews.removeAttribute('data-custom-view');
               }
             }).catch(() => {

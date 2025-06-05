@@ -12,6 +12,8 @@ register_svg_icon "eye"
 register_svg_icon "edit"
 
 after_initialize do
+
+
   # Register custom field for storing custom view count
   Topic.register_custom_field_type('custom_view_count', :integer)
   Topic.register_custom_field_type('use_custom_view_count', :boolean)
