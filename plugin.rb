@@ -134,6 +134,26 @@ after_initialize do
     end
   end
 
+  # Also patch TopicViewSerializer for individual topic pages
+  TopicViewSerializer.class_eval do
+    if method_defined?(:views)
+      alias_method :original_topic_views, :views
+      
+      def views
+        Rails.logger.info "TopicViewSerializer#views called for topic #{object.topic.id}, use_custom: #{object.topic.use_custom_view_count?}, custom_count: #{object.topic.custom_view_count}"
+
+        if object.topic.use_custom_view_count? && object.topic.custom_view_count > 0
+          Rails.logger.info "Topic #{object.topic.id}: TopicView 使用自定義觀看次數: #{object.topic.custom_view_count}"
+          return object.topic.custom_view_count
+        end
+        
+        result = original_topic_views
+        Rails.logger.info "Topic #{object.topic.id}: TopicView 原始觀看次數: #{result}"
+        result
+      end
+    end
+  end
+
   # Event handlers
   on(:custom_view_count_changed) do |topic, value|
     Rails.logger.info "自定義觀看次數已更改: Topic #{topic.id} -> #{value}"

@@ -11,8 +11,7 @@ export default {
         const button = document.querySelector(`[data-topic-id="${topicId}"] .view-count-edit-btn`);
         if (!button) return;
         
-        const icon = button.querySelector('.d-icon');
-        const isCurrentlyCustom = icon && icon.classList.contains('d-icon-eye');
+        const isCurrentlyCustom = button.classList.contains('custom-active');
         
         if (isCurrentlyCustom) {
           // Currently showing custom, switch back to original
@@ -62,42 +61,50 @@ export default {
       
       function updateViewCountInDOM(topicId, customCount, useCustom) {
         const button = document.querySelector(`[data-topic-id="${topicId}"] .view-count-edit-btn`);
-        if (!button) return;
+        const topicRow = document.querySelector(`[data-topic-id="${topicId}"]`);
+        if (!topicRow) return;
         
-        const icon = button.querySelector('.d-icon');
-        const btnText = button.querySelector('.btn-text');
+        const originalViews = topicRow.querySelector('.views .number');
+        const viewsContainer = topicRow.querySelector('.views');
         
         if (useCustom && customCount > 0) {
-          // Update button to show custom count
-          if (icon) {
-            icon.className = 'd-icon d-icon-eye';
+          // Update button state
+          if (button) {
+            button.classList.add('custom-active');
+            button.title = I18n.t('js.view_count_control.disable_custom');
           }
-          if (btnText) {
-            btnText.textContent = customCount;
-          }
-          button.title = I18n.t('js.view_count_control.disable_custom');
           
-          // Hide original view count if setting is enabled
-          if (window.Discourse?.SiteSettings?.view_count_hide_original) {
-            const originalViews = document.querySelector(`[data-topic-id="${topicId}"] .views .number`);
-            if (originalViews) {
-              originalViews.style.display = 'none';
-            }
+          // Replace original view count with custom count in the same position
+          if (originalViews) {
+            originalViews.textContent = customCount;
+            originalViews.setAttribute('data-custom-view', 'true');
+          } else if (viewsContainer) {
+            // Create custom view count element if original doesn't exist
+            const customViewElement = document.createElement('span');
+            customViewElement.className = 'number';
+            customViewElement.textContent = customCount;
+            customViewElement.setAttribute('data-custom-view', 'true');
+            viewsContainer.appendChild(customViewElement);
           }
         } else {
-          // Update button to show edit state
-          if (icon) {
-            icon.className = 'd-icon d-icon-edit';
+          // Update button state
+          if (button) {
+            button.classList.remove('custom-active');
+            button.title = I18n.t('js.view_count_control.enable_custom');
           }
-          if (btnText) {
-            btnText.textContent = I18n.t('js.view_count_control.edit_view_count');
-          }
-          button.title = I18n.t('js.view_count_control.enable_custom');
           
-          // Show original view count
-          const originalViews = document.querySelector(`[data-topic-id="${topicId}"] .views .number`);
-          if (originalViews) {
-            originalViews.style.display = '';
+          // Restore original view count
+          if (originalViews && originalViews.getAttribute('data-custom-view')) {
+            // Need to fetch original count
+            ajax(`/t/${topicId}.json`).then(response => {
+              if (response && response.views !== undefined) {
+                originalViews.textContent = response.views;
+                originalViews.removeAttribute('data-custom-view');
+              }
+            }).catch(() => {
+              // Fallback: just remove the custom marker
+              originalViews.removeAttribute('data-custom-view');
+            });
           }
         }
       }
@@ -123,13 +130,17 @@ export default {
       function checkAndApplyViewCountState(topicId, topicElement) {
         const button = topicElement.querySelector('.view-count-edit-btn');
         if (button) {
-          const icon = button.querySelector('.d-icon');
-          const isCustom = icon && icon.classList.contains('d-icon-eye');
+          const isCustom = button.classList.contains('custom-active');
           
           if (isCustom) {
-            const btnText = button.querySelector('.btn-text');
-            const customCount = btnText ? parseInt(btnText.textContent) || 0 : 0;
-            updateViewCountInDOM(topicId, customCount, true);
+            // Get custom count from topic data
+            ajax(`/t/${topicId}.json`).then(response => {
+              if (response && response.custom_view_count) {
+                updateViewCountInDOM(topicId, response.custom_view_count, true);
+              }
+            }).catch(() => {
+              // Silently handle errors
+            });
           }
           return;
         }

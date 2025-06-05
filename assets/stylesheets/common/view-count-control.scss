@@ -37,10 +37,14 @@
     box-shadow: 0 1px 2px rgba(0, 123, 255, 0.3);
   }
   
-  .d-icon {
-    font-size: 1em;
-    margin: 0;
-    flex-shrink: 0;
+  &.custom-active {
+    background: #28a745;
+    border-color: #28a745;
+    
+    &:hover {
+      background: #218838;
+      border-color: #218838;
+    }
   }
   
   .btn-text {
@@ -156,6 +160,39 @@ body[data-hide-original-views="true"] {
   
   .topic-meta-data .views .number {
     display: none !important;
+  }
+}
+
+// More aggressive hiding for custom view counts
+.topic-list-item[data-use-custom-view="true"] {
+  .views .number {
+    display: none !important;
+  }
+}
+
+// Hide original views when custom view is active
+.use-custom-view-count {
+  .views .number {
+    display: none !important;
+  }
+  
+  .num.views {
+    .number {
+      display: none !important;
+    }
+  }
+}
+
+// Ensure custom view count is visible
+.custom-view-display {
+  color: var(--primary);
+  font-weight: 500;
+  
+  &::after {
+    content: " 觀看";
+    color: var(--primary-medium);
+    font-weight: normal;
+    margin-left: 2px;
   }
 }
 
