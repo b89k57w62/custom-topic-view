@@ -202,11 +202,6 @@ body[data-hide-original-views="true"] {
 .custom-view-count {
   color: #007bff;
   font-weight: 500;
-  
-  &::before {
-    content: "👁 ";
-    margin-right: 2px;
-  }
 }
 
 // Inline edit form

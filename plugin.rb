@@ -8,8 +8,7 @@ enabled_site_setting :topic_view_count_control_enabled
 
 register_asset "stylesheets/common/view-count-control.scss"
 
-register_svg_icon "eye"
-register_svg_icon "edit"
+
 
 after_initialize do
 
