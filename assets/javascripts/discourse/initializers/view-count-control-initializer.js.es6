@@ -67,16 +67,32 @@ export default {
             button.classList.add('custom-active');
             button.title = I18n.t('js.view_count_control.disable_custom');
           }
-          if (originalViews) {
-            originalViews.textContent = formatViewCount(customCount);
-            originalViews.setAttribute('data-custom-view', 'true');
-          } else if (viewsContainer) {
-            const customViewElement = document.createElement('span');
-            customViewElement.className = 'number';
-            customViewElement.textContent = formatViewCount(customCount);
-            customViewElement.setAttribute('data-custom-view', 'true');
-            viewsContainer.appendChild(customViewElement);
-          }
+          ajax(`/t/${topicId}.json`).then(response => {
+            if (response) {
+              const calculatedViews = response.views; 
+              if (originalViews) {
+                originalViews.textContent = formatViewCount(calculatedViews);
+                originalViews.setAttribute('data-custom-view', 'true');
+              } else if (viewsContainer) {
+                const customViewElement = document.createElement('span');
+                customViewElement.className = 'number';
+                customViewElement.textContent = formatViewCount(calculatedViews);
+                customViewElement.setAttribute('data-custom-view', 'true');
+                viewsContainer.appendChild(customViewElement);
+              }
+            }
+          }).catch(() => {
+            if (originalViews) {
+              originalViews.textContent = formatViewCount(customCount);
+              originalViews.setAttribute('data-custom-view', 'true');
+            } else if (viewsContainer) {
+              const customViewElement = document.createElement('span');
+              customViewElement.className = 'number';
+              customViewElement.textContent = formatViewCount(customCount);
+              customViewElement.setAttribute('data-custom-view', 'true');
+              viewsContainer.appendChild(customViewElement);
+            }
+          });
         } else {
           if (button) {
             button.classList.remove('custom-active');

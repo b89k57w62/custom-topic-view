@@ -82,9 +82,10 @@ export default class ViewCountControl extends Component {
       topic.notifyPropertyChange("custom_view_count");
       topic.notifyPropertyChange("use_custom_view_count");
       
-      // Update display_view_count
-      if (useCustom && customCount > 0) {
-        topic.set("display_view_count", customCount);
+      if (useCustom && customCount > 0) { 
+        const baseViews = topic.views || 0;
+        const totalViews = baseViews + customCount;
+        topic.set("display_view_count", totalViews);
       } else {
         topic.set("display_view_count", topic.views);
       }
