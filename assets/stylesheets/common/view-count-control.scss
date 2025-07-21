@@ -57,6 +57,43 @@
     font-size: 0.9em;
     font-weight: 500;
   }
+
+  @media screen and (max-width: 768px) {
+    padding: 0.3em 0.6em;
+    font-size: 0.8em;
+    min-height: 28px;
+    gap: 0.3em;
+    margin-left: 4px;
+    
+    .btn-text {
+      font-size: 0.85em;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    padding: 0.25em 0.5em;
+    font-size: 0.75em;
+    min-height: 26px;
+    gap: 0.2em;
+    margin-left: 2px;
+    white-space: normal; 
+    word-break: keep-all;
+    
+    .btn-text {
+      font-size: 0.8em;
+      line-height: 1.2;
+    }
+  }
+
+  @media screen and (max-width: 360px) {
+    padding: 0.2em 0.4em;
+    font-size: 0.7em;
+    min-height: 24px;
+    
+    .btn-text {
+      font-size: 0.75em;
+    }
+  }
 }
 
 .view-count-control-modal {
@@ -197,6 +234,42 @@
       font-size: 1em;
       font-weight: 500;
     }
+
+    // 響應式設計支持 - 主題頁面
+    @media screen and (max-width: 768px) {
+      padding: 0.4em 0.8em;
+      font-size: 0.85em;
+      min-height: 32px;
+      gap: 0.4em;
+      
+      .btn-text {
+        font-size: 0.9em;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      padding: 0.35em 0.7em;
+      font-size: 0.8em;
+      min-height: 30px;
+      gap: 0.3em;
+      white-space: normal; // 允許在極小屏幕上換行
+      word-break: keep-all; // 保持中文字詞完整
+      
+      .btn-text {
+        font-size: 0.85em;
+        line-height: 1.2;
+      }
+    }
+
+    @media screen and (max-width: 360px) {
+      padding: 0.3em 0.6em;
+      font-size: 0.75em;
+      min-height: 28px;
+      
+      .btn-text {
+        font-size: 0.8em;
+      }
+    }
   }
 }
 
@@ -282,6 +355,41 @@ body[data-hide-original-views="true"] {
       &:hover {
         background: #5a6268;
       }
+    }
+  }
+
+  // 響應式設計支持 - 行內編輯
+  @media screen and (max-width: 768px) {
+    gap: 6px;
+    margin-left: 8px;
+    
+    input {
+      width: 70px;
+      padding: 3px 6px;
+      font-size: 11px;
+    }
+    
+    .save-btn, .cancel-btn {
+      padding: 3px 6px;
+      font-size: 11px;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    gap: 4px;
+    margin-left: 4px;
+    flex-wrap: wrap; // 允許按鈕換行
+    
+    input {
+      width: 60px;
+      padding: 2px 4px;
+      font-size: 10px;
+    }
+    
+    .save-btn, .cancel-btn {
+      padding: 2px 4px;
+      font-size: 10px;
+      min-width: 32px;
     }
   }
 } 
