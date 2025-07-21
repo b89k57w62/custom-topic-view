@@ -137,11 +137,20 @@ export default class ViewCountControl extends Component {
       if (useCustom && customCount > 0) { 
         const baseViews = topic.views || 0;
         const totalViews = baseViews + customCount;
+        
+        topic.set("views", totalViews);
         topic.set("display_view_count", totalViews);
+        topic.notifyPropertyChange("views");
+        topic.notifyPropertyChange("display_view_count");
+        
+        this.updateTopicMapViews(totalViews);
       } else {
-        topic.set("display_view_count", topic.views);
+        const originalViews = topic.views || 0;
+        topic.set("display_view_count", originalViews);
+        topic.notifyPropertyChange("display_view_count");
+        
+        this.updateTopicMapViews(originalViews);
       }
-      topic.notifyPropertyChange("display_view_count");
 
       this.showSuccessMessage();
 
@@ -153,6 +162,41 @@ export default class ViewCountControl extends Component {
       }
       throw error;
     }
+  }
+
+  updateTopicMapViews(viewCount) {
+    const topicMapViews = document.querySelector('.topic-map__stats .number');
+    if (topicMapViews) {
+      topicMapViews.textContent = this.formatViewCount(viewCount);
+    }
+    
+    const topicMapViewsTrigger = document.querySelector('.topic-map__views-trigger .number');
+    if (topicMapViewsTrigger) {
+      topicMapViewsTrigger.textContent = this.formatViewCount(viewCount);
+    }
+    
+    const allViewsElements = document.querySelectorAll('.topic-stats .views .number, .topic-meta-data .views .number');
+    allViewsElements.forEach(element => {
+      element.textContent = this.formatViewCount(viewCount);
+    });
+  }
+
+  formatViewCount(count) {
+    const num = parseInt(count);
+    
+    if (num >= 1000000) {
+      const formatted = (num / 1000000).toFixed(1);
+      return formatted.endsWith('.0') ? 
+             `${Math.floor(num / 1000000)}M` : 
+             `${formatted}M`;
+    } else if (num >= 1000) {
+      const formatted = (num / 1000).toFixed(1);
+      return formatted.endsWith('.0') ? 
+             `${Math.floor(num / 1000)}K` : 
+             `${formatted}K`;
+    }
+    
+    return num.toString();
   }
 
   showRateLimitError() {

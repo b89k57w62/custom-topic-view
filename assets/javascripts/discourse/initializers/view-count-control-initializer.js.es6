@@ -99,6 +99,67 @@ export default {
         ).then(results => results.flat().filter(Boolean));
       }
 
+      function updateAllViewElements(topicId, viewCount) {
+        const formattedCount = formatViewCount(viewCount);
+        
+        const topicRow = document.querySelector(`[data-topic-id="${topicId}"]`);
+        if (topicRow) {
+          const originalViews = topicRow.querySelector('.views .number');
+          if (originalViews) {
+            originalViews.textContent = formattedCount;
+            originalViews.setAttribute('data-custom-view', 'true');
+          }
+        }
+        
+        const topicMapViews = document.querySelector('.topic-map__stats .number');
+        if (topicMapViews) {
+          topicMapViews.textContent = formattedCount;
+        }
+        
+        const topicMapViewsTrigger = document.querySelector('.topic-map__views-trigger .number');
+        if (topicMapViewsTrigger) {
+          topicMapViewsTrigger.textContent = formattedCount;
+        }
+        
+        const allViewsElements = document.querySelectorAll(
+          '.topic-stats .views .number, .topic-meta-data .views .number, ' +
+          '.topic-map .views .number, .topic-list .views .number'
+        );
+        allViewsElements.forEach(element => {
+          if (element.closest(`[data-topic-id="${topicId}"]`) || 
+              element.closest('.topic-map') || 
+              !element.closest('[data-topic-id]')) {
+            element.textContent = formattedCount;
+          }
+        });
+      }
+
+      function getCurrentTopicId() {
+        const match = window.location.pathname.match(/\/t\/[^\/]+\/(\d+)/);
+        return match ? match[1] : null;
+      }
+
+      function initializeCurrentTopic() {
+        const currentTopicId = getCurrentTopicId();
+        if (!currentTopicId) return;
+
+        if (canMakeRequest(`init_${currentTopicId}`)) {
+          recordRequest(`init_${currentTopicId}`);
+          
+          throttledAjax(`/t/${currentTopicId}.json`)
+            .then(response => {
+              if (response && response.use_custom_view_count && response.custom_view_count > 0) {
+                const baseViews = response.views || 0;
+                const totalViews = baseViews + response.custom_view_count;
+                updateAllViewElements(currentTopicId, totalViews);
+              }
+            })
+            .catch(error => {
+              console.warn('Failed to initialize current topic view count:', error);
+            });
+        }
+      }
+
       window.editViewCount = function(topicId) {
         const button = document.querySelector(`[data-topic-id="${topicId}"] .view-count-edit-btn`);
         if (!button) return;
@@ -159,11 +220,6 @@ export default {
       
       function updateViewCountInDOM(topicId, customCount, useCustom) {
         const button = document.querySelector(`[data-topic-id="${topicId}"] .view-count-edit-btn`);
-        const topicRow = document.querySelector(`[data-topic-id="${topicId}"]`);
-        if (!topicRow) return;
-        
-        const originalViews = topicRow.querySelector('.views .number');
-        const viewsContainer = topicRow.querySelector('.views');
         
         if (useCustom && customCount > 0) {
           if (button) {
@@ -171,31 +227,42 @@ export default {
             button.title = I18n.t('js.view_count_control.disable_custom');
           }
           
-          if (originalViews) {
-            originalViews.textContent = formatViewCount(customCount);
-            originalViews.setAttribute('data-custom-view', 'true');
-          } else if (viewsContainer) {
-            const customViewElement = document.createElement('span');
-            customViewElement.className = 'number';
-            customViewElement.textContent = formatViewCount(customCount);
-            customViewElement.setAttribute('data-custom-view', 'true');
-            viewsContainer.appendChild(customViewElement);
-          }
+          throttledAjax(`/t/${topicId}.json`)
+            .then(response => {
+              if (response) {
+                const baseViews = response.views || 0;
+                const totalViews = baseViews + customCount;
+                updateAllViewElements(topicId, totalViews);
+              }
+            })
+            .catch(() => {
+              updateAllViewElements(topicId, customCount);
+            });
         } else {
           if (button) {
             button.classList.remove('custom-active');
             button.title = I18n.t('js.view_count_control.enable_custom');
           }
           
-          if (originalViews && originalViews.getAttribute('data-custom-view')) {
-            originalViews.removeAttribute('data-custom-view');
-          }
+          throttledAjax(`/t/${topicId}.json`)
+            .then(response => {
+              if (response && response.views !== undefined) {
+                updateAllViewElements(topicId, response.views);
+              }
+            })
+            .catch(() => {
+              const viewsElements = document.querySelectorAll(`[data-topic-id="${topicId}"] .views .number`);
+              viewsElements.forEach(element => {
+                element.removeAttribute('data-custom-view');
+              });
+            });
         }
       }
       
       api.onPageChange((url, title) => {
         setTimeout(() => {
           applyViewCountControlToAllTopics();
+          initializeCurrentTopic();
         }, 1000);
       });
       
@@ -208,14 +275,7 @@ export default {
         batchGetTopicsInfo(topicIds).then(responses => {
           responses.forEach(response => {
             if (response && response.id) {
-              const topicElement = document.querySelector(`[data-topic-id="${response.id}"]`);
-              if (topicElement) {
-                updateViewCountInDOM(
-                  response.id, 
-                  response.custom_view_count || 0, 
-                  response.use_custom_view_count || false
-                );
-              }
+              applyViewCountToTopic(response);
             }
           });
         }).catch(error => {
@@ -223,8 +283,38 @@ export default {
         });
       }
       
+      function applyViewCountToTopic(topicData) {
+        if (!topicData.use_custom_view_count || !topicData.custom_view_count) {
+          return;
+        }
+        
+        const baseViews = topicData.views || 0;
+        const customViews = topicData.custom_view_count || 0;
+        const totalViews = baseViews + customViews;
+        
+        if (window.location.pathname.includes(`/t/`) && 
+            window.location.pathname.includes(`/${topicData.id}`)) {
+          updateAllViewElements(topicData.id, totalViews);
+        }
+        
+        const topicElement = document.querySelector(`[data-topic-id="${topicData.id}"]`);
+        if (topicElement) {
+          const viewsElement = topicElement.querySelector('.views .number');
+          if (viewsElement) {
+            viewsElement.textContent = formatViewCount(totalViews);
+            viewsElement.setAttribute('data-custom-view', 'true');
+          }
+          
+          const button = topicElement.querySelector('.view-count-edit-btn');
+          if (button) {
+            button.classList.add('custom-active');
+          }
+        }
+      }
+      
       setTimeout(() => {
         applyViewCountControlToAllTopics();
+        initializeCurrentTopic();
       }, 1500);
     });
   }

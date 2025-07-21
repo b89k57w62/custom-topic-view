@@ -37,12 +37,12 @@ module ViewCountControl
 
     def calculate_view_count
       if object.use_custom_view_count? && object.custom_view_count > 0
-        base_views = respond_to?(:original_views) ? original_views : (object.views || 0)
+        base_views = respond_to?(:original_views) ? original_views : (object.original_views || 0)
         base_views = 0 if base_views.nil?
         custom_views = object.custom_view_count || 0
         base_views + custom_views
       else
-        respond_to?(:original_views) ? original_views : (object.views || 0)
+        respond_to?(:original_views) ? original_views : (object.original_views || 0)
       end
     end
   end
@@ -75,12 +75,12 @@ module ViewCountControl
 
     def calculate_topic_view_count
       if object.topic.use_custom_view_count? && object.topic.custom_view_count > 0
-        base_views = respond_to?(:original_topic_views) ? original_topic_views : (object.topic.views || 0)
+        base_views = respond_to?(:original_topic_views) ? original_topic_views : (object.topic.original_views || 0)
         base_views = 0 if base_views.nil?
         custom_views = object.topic.custom_view_count || 0
         base_views + custom_views
       else
-        respond_to?(:original_topic_views) ? original_topic_views : (object.topic.views || 0)
+        respond_to?(:original_topic_views) ? original_topic_views : (object.topic.original_views || 0)
       end
     end
   end
@@ -121,6 +121,10 @@ after_initialize do
     add_to_serializer(:basic_category, key.to_sym) { object.custom_fields[key] }
   end
 
+  add_to_class(:topic, :original_views) do
+    read_attribute(:views) || 0
+  end
+
   add_to_class(:topic, :custom_view_count) do
     custom_fields['custom_view_count']&.to_i || 0
   end
@@ -139,11 +143,21 @@ after_initialize do
 
   add_to_class(:topic, :display_view_count) do
     if use_custom_view_count? && custom_view_count > 0
-      base_views = views || 0
+      base_views = original_views || 0
       custom_views = custom_view_count || 0
       base_views + custom_views
     else
-      views
+      original_views
+    end
+  end
+
+  add_to_class(:topic, :views) do
+    if use_custom_view_count? && custom_view_count > 0
+      base_views = original_views || 0
+      custom_views = custom_view_count || 0
+      base_views + custom_views
+    else
+      original_views
     end
   end
 
