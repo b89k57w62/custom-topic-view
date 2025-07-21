@@ -15,6 +15,9 @@ en:
       success: "View count updated successfully"
       error: "Failed to update view count"
       invalid_number: "Please enter a valid number"
+      rate_limit_error: "You are updating too frequently. Please wait a moment before trying again."
+      network_error: "Network error occurred. Please check your connection and try again."
+      server_error: "Server error occurred. Please try again later."
     category:
       view_count_control_enabled: "Enable view count control for topics in this category"
       view_count_control_default: "Default state of custom view count in this category (checked = enabled)"

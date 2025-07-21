@@ -8,7 +8,6 @@ enabled_site_setting :topic_view_count_control_enabled
 
 register_asset "stylesheets/common/view-count-control.scss"
 
-# 序列化器扩展模块
 module ViewCountControl
   module TopicListItemSerializerExtension
     extend ActiveSupport::Concern
@@ -92,6 +91,8 @@ after_initialize do
   Topic.register_custom_field_type('use_custom_view_count', :boolean)
 
   PostRevisor.track_topic_field(:custom_view_count) do |tc, v|
+    RateLimiter.new(tc.user, "topic_view_count_update", 5, 1.minute).performed!
+    
     tc.topic.custom_fields['custom_view_count'] = v.to_i
     tc.topic.save_custom_fields(true)
     
@@ -99,6 +100,8 @@ after_initialize do
   end
 
   PostRevisor.track_topic_field(:use_custom_view_count) do |tc, v|
+    RateLimiter.new(tc.user, "topic_view_count_toggle", 10, 1.minute).performed!
+    
     tc.topic.custom_fields['use_custom_view_count'] = v
     tc.topic.save_custom_fields(true)
     

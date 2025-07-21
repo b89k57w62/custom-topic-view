@@ -12,6 +12,12 @@ export default class ViewCountControl extends Component {
 
   @tracked isEditing = false;
   @tracked editValue = "";
+  @tracked isLoading = false;
+  @tracked lastUpdateTime = 0;
+
+  MIN_UPDATE_INTERVAL = 2000;
+  MAX_UPDATES_PER_MINUTE = 10;
+  updateTimestamps = [];
 
   get topic() {
     return this.args.outletArgs?.model || 
@@ -32,8 +38,31 @@ export default class ViewCountControl extends Component {
     return false;
   }
 
+  get canUpdate() {
+    const now = Date.now();
+    
+    if (now - this.lastUpdateTime < this.MIN_UPDATE_INTERVAL) {
+      return false;
+    }
+    
+    const oneMinuteAgo = now - 60000;
+    this.updateTimestamps = this.updateTimestamps.filter(timestamp => timestamp > oneMinuteAgo);
+    
+    return this.updateTimestamps.length < this.MAX_UPDATES_PER_MINUTE;
+  }
+
+  recordUpdate() {
+    const now = Date.now();
+    this.lastUpdateTime = now;
+    this.updateTimestamps.push(now);
+  }
+
   @action
   openViewCountModal() {
+    if (!this.canUpdate) {
+      this.showRateLimitError();
+      return;
+    }
     this.showViewCountEditForm();
   }
 
@@ -45,11 +74,27 @@ export default class ViewCountControl extends Component {
 
   @action
   async saveViewCount() {
+    if (!this.canUpdate) {
+      this.showRateLimitError();
+      return;
+    }
+
+    if (this.isLoading) {
+      return;
+    }
+
     const customCount = parseInt(this.editValue) || 0;
     const useCustom = customCount > 0;
     
-    await this.updateViewCount(customCount, useCustom);
-    this.isEditing = false;
+    this.isLoading = true;
+    
+    try {
+      await this.updateViewCount(customCount, useCustom);
+      this.isEditing = false;
+    } catch (error) {
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   @action
@@ -67,6 +112,13 @@ export default class ViewCountControl extends Component {
   async updateViewCount(customCount, useCustom) {
     const topic = this.topic;
     if (!topic) return;
+
+    if (!this.canUpdate) {
+      this.showRateLimitError();
+      return;
+    }
+
+    this.recordUpdate();
 
     try {
       await ajax(`/t/${topic.id}`, {
@@ -91,13 +143,43 @@ export default class ViewCountControl extends Component {
       }
       topic.notifyPropertyChange("display_view_count");
 
+      this.showSuccessMessage();
+
     } catch (error) {
-      popupAjaxError(error);
+      if (error.jqXHR?.status === 429) {
+        this.showRateLimitError();
+      } else {
+        popupAjaxError(error);
+      }
+      throw error;
+    }
+  }
+
+  showRateLimitError() {
+    if (window.bootbox) {
+      window.bootbox.alert(
+        I18n.t('js.view_count_control.rate_limit_error', {
+          defaultValue: 'You are updating too frequently. Please wait a moment before trying again.'
+        })
+      );
+    }
+  }
+
+  showSuccessMessage() {
+    if (window.Discourse?.User?.currentProp) {
+      const user = window.Discourse.User.current();
+      if (user) {
+        user.appEvents?.trigger('popup-message', {
+          message: I18n.t('js.view_count_control.success', {
+            defaultValue: 'View count updated successfully'
+          }),
+          type: 'success'
+        });
+      }
     }
   }
 }
 
-// Modal component for editing view count
 class ViewCountModal extends Component {
   @service modal;
   @tracked customViewCount = "";
@@ -129,12 +211,14 @@ class ViewCountModal extends Component {
     const customCount = parseInt(this.customViewCount) || 0;
     
     if (customCount < 0) {
-      // Show error message
       return;
     }
 
-    await this.args.model.onSave(customCount, this.useCustomViewCount);
-    this.modal.close();
+    try {
+      await this.args.model.onSave(customCount, this.useCustomViewCount);
+      this.modal.close();
+    } catch (error) {
+    }
   }
 
   @action

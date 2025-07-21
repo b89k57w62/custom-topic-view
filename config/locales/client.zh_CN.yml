@@ -15,6 +15,9 @@ zh_CN:
       success: "觀看次數更新成功"
       error: "更新觀看次數失敗"
       invalid_number: "請輸入有效的數字"
+      rate_limit_error: "更新過於頻繁，請稍等片刻再試。"
+      network_error: "網絡錯誤，請檢查連接後重試。"
+      server_error: "服務器錯誤，請稍後重試。"
     category:
       view_count_control_enabled: "為此分類中的主題啟用觀看次數控制功能"
       view_count_control_default: "此分類中自定義觀看次數的默認狀態（勾選 = 啟用）"
