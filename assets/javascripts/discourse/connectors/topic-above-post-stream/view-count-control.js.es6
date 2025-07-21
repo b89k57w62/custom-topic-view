@@ -134,22 +134,16 @@ export default class ViewCountControl extends Component {
       topic.notifyPropertyChange("custom_view_count");
       topic.notifyPropertyChange("use_custom_view_count");
       
-      if (useCustom && customCount > 0) { 
-        const baseViews = topic.views || 0;
-        const totalViews = baseViews + customCount;
+      const response = await ajax(`/t/${topic.id}.json`);
+      if (response && response.views !== undefined) {
+        const finalViews = response.views;
         
-        topic.set("views", totalViews);
-        topic.set("display_view_count", totalViews);
+        topic.set("views", finalViews);
+        topic.set("display_view_count", finalViews);
         topic.notifyPropertyChange("views");
         topic.notifyPropertyChange("display_view_count");
         
-        this.updateTopicMapViews(totalViews);
-      } else {
-        const originalViews = topic.views || 0;
-        topic.set("display_view_count", originalViews);
-        topic.notifyPropertyChange("display_view_count");
-        
-        this.updateTopicMapViews(originalViews);
+        this.updateTopicMapViews(finalViews);
       }
 
       this.showSuccessMessage();

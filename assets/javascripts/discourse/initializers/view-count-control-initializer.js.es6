@@ -148,10 +148,8 @@ export default {
           
           throttledAjax(`/t/${currentTopicId}.json`)
             .then(response => {
-              if (response && response.use_custom_view_count && response.custom_view_count > 0) {
-                const baseViews = response.views || 0;
-                const totalViews = baseViews + response.custom_view_count;
-                updateAllViewElements(currentTopicId, totalViews);
+              if (response && response.views !== undefined) {
+                updateAllViewElements(currentTopicId, response.views);
               }
             })
             .catch(error => {
@@ -226,37 +224,22 @@ export default {
             button.classList.add('custom-active');
             button.title = I18n.t('js.view_count_control.disable_custom');
           }
-          
-          throttledAjax(`/t/${topicId}.json`)
-            .then(response => {
-              if (response) {
-                const baseViews = response.views || 0;
-                const totalViews = baseViews + customCount;
-                updateAllViewElements(topicId, totalViews);
-              }
-            })
-            .catch(() => {
-              updateAllViewElements(topicId, customCount);
-            });
         } else {
           if (button) {
             button.classList.remove('custom-active');
             button.title = I18n.t('js.view_count_control.enable_custom');
           }
-          
-          throttledAjax(`/t/${topicId}.json`)
-            .then(response => {
-              if (response && response.views !== undefined) {
-                updateAllViewElements(topicId, response.views);
-              }
-            })
-            .catch(() => {
-              const viewsElements = document.querySelectorAll(`[data-topic-id="${topicId}"] .views .number`);
-              viewsElements.forEach(element => {
-                element.removeAttribute('data-custom-view');
-              });
-            });
         }
+        
+        throttledAjax(`/t/${topicId}.json`)
+          .then(response => {
+            if (response && response.views !== undefined) {
+              updateAllViewElements(topicId, response.views);
+            }
+          })
+          .catch(error => {
+            console.warn('Failed to refresh view count:', error);
+          });
       }
       
       api.onPageChange((url, title) => {
@@ -288,20 +271,18 @@ export default {
           return;
         }
         
-        const baseViews = topicData.views || 0;
-        const customViews = topicData.custom_view_count || 0;
-        const totalViews = baseViews + customViews;
+        const displayViews = topicData.views || 0;
         
         if (window.location.pathname.includes(`/t/`) && 
             window.location.pathname.includes(`/${topicData.id}`)) {
-          updateAllViewElements(topicData.id, totalViews);
+          updateAllViewElements(topicData.id, displayViews);
         }
         
         const topicElement = document.querySelector(`[data-topic-id="${topicData.id}"]`);
         if (topicElement) {
           const viewsElement = topicElement.querySelector('.views .number');
           if (viewsElement) {
-            viewsElement.textContent = formatViewCount(totalViews);
+            viewsElement.textContent = formatViewCount(displayViews);
             viewsElement.setAttribute('data-custom-view', 'true');
           }
           
