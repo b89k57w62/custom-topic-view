@@ -17,13 +17,13 @@ plugins:
     description: "Only allow staff members to modify view counts (otherwise admin only)"
   view_count_auto_increment_enabled:
     client: true
-    default: false
+    default: true
     description: "Enable automatic view count increment via scheduled job"
   view_count_increment_interval_hours:
-    client: false
+    client: true
     default: 6
     description: "Hours between auto increment runs"
   view_count_regular_batch_size:
-    client: false
+    client: true
     default: 30
     description: "Number of regular topics to update per batch"
