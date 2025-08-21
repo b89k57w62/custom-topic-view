@@ -1,8 +1,8 @@
 # name: topic-view-count-control
 # about: Allows admin and staff to set custom view counts for topics, overriding the default display
-# version: 1.0
+# version: 1.1
 # authors: Jeffrey
-# url: https://github.com/b89k57w62/topic-topic-view
+# url: https://github.com/b89k57w62/custom-topic-view
 
 enabled_site_setting :topic_view_count_control_enabled
 
@@ -92,19 +92,19 @@ after_initialize do
 
   PostRevisor.track_topic_field(:custom_view_count) do |tc, v|
     RateLimiter.new(tc.user, "topic_view_count_update", 5, 1.minute).performed!
-    
+
     tc.topic.custom_fields['custom_view_count'] = v.to_i
     tc.topic.save_custom_fields(true)
-    
+
     DiscourseEvent.trigger(:custom_view_count_changed, tc.topic, v)
   end
 
   PostRevisor.track_topic_field(:use_custom_view_count) do |tc, v|
     RateLimiter.new(tc.user, "topic_view_count_toggle", 10, 1.minute).performed!
-    
+
     tc.topic.custom_fields['use_custom_view_count'] = v
     tc.topic.save_custom_fields(true)
-    
+
     DiscourseEvent.trigger(:custom_view_count_toggle_changed, tc.topic, v)
   end
 
@@ -115,7 +115,7 @@ after_initialize do
 
   register_category_custom_field_type('view_count_control_enabled', :boolean)
   register_category_custom_field_type('view_count_control_default', :boolean)
-  
+
   %w[view_count_control_enabled view_count_control_default].each do |key|
     Site.preloaded_category_custom_fields << key if Site.respond_to?(:preloaded_category_custom_fields)
     add_to_serializer(:basic_category, key.to_sym) { object.custom_fields[key] }
@@ -176,4 +176,6 @@ after_initialize do
   on(:custom_view_count_toggle_changed) do |topic, value|
     Rails.logger.debug "Custom view count toggle changed: Topic #{topic.id} -> #{value}"
   end
-end 
+
+  load File.expand_path('../app/jobs/scheduled/view_count_increment_job.rb', __FILE__)
+end
