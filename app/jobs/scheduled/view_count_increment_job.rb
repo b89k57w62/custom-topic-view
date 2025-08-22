@@ -2,7 +2,7 @@
 
 module Jobs
   class ViewCountIncrement < ::Jobs::Scheduled
-    every 6.hours
+    every 2.hours
 
     def execute(args)
       return unless SiteSetting.view_count_auto_increment_enabled?
