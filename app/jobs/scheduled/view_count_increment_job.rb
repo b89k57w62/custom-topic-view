@@ -26,32 +26,12 @@ module Jobs
     private
 
     def select_pinned_topics
-      all_pinned = Topic.where.not(pinned_at: nil)
-                       .where(archetype: Archetype.default)
+      pinned_topics = Topic.where.not(pinned_at: nil)
+                           .where(archetype: Archetype.default)
 
-      return [] if all_pinned.empty?
+      Rails.logger.info "Selecting ALL pinned topics: #{pinned_topics.count} topics"
 
-      total_count = all_pinned.count
-      selection_ratio = case total_count
-                       when 1..10   then 0.7
-                       when 11..30  then 0.6
-                       when 31..100 then 0.5
-                       else              0.4
-                       end
-
-      selection_count = (total_count * selection_ratio).round.clamp(1, total_count)
-
-      Rails.logger.info "Found #{total_count} pinned topics, selecting #{selection_count}"
-
-      weighted_topics = all_pinned.sort_by do |topic|
-        views = topic.display_view_count || 0
-        days_pinned = (Time.current - topic.pinned_at) / 1.day
-
-        weight = (views < 500 ? 1.5 : 1.0) * (days_pinned < 7 ? 1.3 : 1.0)
-        -weight + rand(0.3)
-      end
-
-      weighted_topics.first(selection_count)
+      pinned_topics
     end
 
     def select_regular_topics
@@ -102,9 +82,9 @@ module Jobs
 
     def calculate_increment(current_views)
       case current_views
-      when 0..100   then rand(1..3)
-      when 101..500 then rand(2..5)
-      else               rand(3..8)
+      when 0..100   then rand(30..50)
+      when 101..500 then rand(30..40)
+      else               rand(5..30)
       end
     end
   end
